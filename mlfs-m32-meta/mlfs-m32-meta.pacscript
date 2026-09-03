@@ -28,7 +28,7 @@ depends=(
     'openssl' 'elfutils' 'libffi' 'sqlite' 'python'
     'flit-core' 'packaging' 'wheel' 'setuptools' 'ninja'
     'meson' 'kmod' 'coreutils' 'diffutils' 'gawk'
-    'findutils' 'groff' 'grub' 'gzip' 'iproute2'
+    'findutils' 'groff' 'grub' 'grub-efi' 'gzip' 'iproute2'
     'kbd' 'libpipeline' 'make' 'patch' 'tar'
     'texinfo' 'vim' 'markupsafe' 'jinja2' 'systemd'
     'dbus' 'man-db' 'procps-ng' 'util-linux' 'e2fsprogs'
