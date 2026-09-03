@@ -1,0 +1,3 @@
+pkgname=e2fsprogs; pkgver=1.47.3; source=("https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v${pkgver}/e2fsprogs-${pkgver}.tar.gz")
+build(){ cd e2fsprogs-${pkgver}; mkdir build32 build64; cd build32; CC="gcc -m32" ../configure --prefix=/usr --libdir=/usr/lib32 --enable-elf-shlibs --disable-libblkid --disable-libuuid --disable-fsck; make; cd ../build64; ../configure --prefix=/usr --enable-elf-shlibs --disable-libblkid --disable-libuuid --disable-fsck; make; }
+package(){ cd e2fsprogs-${pkgver}/build32; make DESTDIR=$srcdir/m32 install; cd ../build64; make DESTDIR=$pkgdir install; cp -a $srcdir/m32/usr/lib32 $pkgdir/usr/; }
