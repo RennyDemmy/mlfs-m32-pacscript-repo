@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Loop through every .pacscript file in the current directory
+for script in *.pacscript; do
+    # Skip if no pacscripts are found (prevents literal '*.pacscript' errors)
+    [ -e "$script" ] || continue
+    
+    # Extract the exact pkgname from the script (e.g., pkgname=binutils-pass1)
+    pkgname=$(grep -m1 '^pkgname=' "$script" | cut -d= -f2 | tr -d "\"'")
+    
+    # Fallback to the filename (minus extension) if pkgname wasn't found
+    if [ -z "$pkgname" ]; then
+        pkgname="${script%.pacscript}"
+    fi
+    
+    # Create the directory based on the pkgname
+    mkdir -p "$pkgname"
+    
+    # Move and rename the script into the new directory
+    # (Pacstall repos expect: pkgname/pkgname.pacscript)
+    mv "$script" "$pkgname/${pkgname}.pacscript"
+    
+    echo "Moved: $script  ->  $pkgname/${pkgname}.pacscript"
+done
+
+echo "Done! All Pacscripts are now perfectly organized for a Pacstall repository."

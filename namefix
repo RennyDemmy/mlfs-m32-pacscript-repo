@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Loop through all folders containing the error string
+for bad_name in *"; pkgver"*; do
+    # Ensure the directory exists
+    [ -d "$bad_name" ] || continue
+    
+    # Extract the correct name (everything before the semicolon)
+    correct_name="${bad_name%;*}"
+    
+    # 1. Fix the pacscript filename INSIDE the directory first
+    if [ -f "$bad_name/$bad_name.pacscript" ]; then
+        mv "$bad_name/$bad_name.pacscript" "$bad_name/$correct_name.pacscript"
+    fi
+    
+    # 2. Rename the directory itself
+    mv "$bad_name" "$correct_name"
+    
+    echo "Fixed: '$bad_name'  ->  '$correct_name'"
+done
+
+echo "Done! Folders and files are now correctly named."

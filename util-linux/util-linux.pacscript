@@ -1,0 +1,3 @@
+pkgname=util-linux; pkgver=2.41.3; source=("https://www.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-${pkgver}.tar.xz")
+build(){ cd util-linux-${pkgver}; CC="gcc -m32" ./configure --prefix=/usr --libdir=/usr/lib32 --disable-chfn-chsh --disable-login --disable-nologin --disable-su --disable-setpriv --disable-runuser --disable-pylibmount --disable-static; make; make DESTDIR=$srcdir/m32 install; make clean; ./configure --prefix=/usr --disable-chfn-chsh --disable-login --disable-nologin --disable-su --disable-setpriv --disable-runuser --disable-pylibmount --disable-static; make -j$(nproc); }
+package(){ cd util-linux-${pkgver}; make DESTDIR=$pkgdir install; cp -a $srcdir/m32/usr/lib32 $pkgdir/usr/; }
