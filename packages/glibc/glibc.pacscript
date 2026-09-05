@@ -1,0 +1,3 @@
+pkgname=glibc; pkgver=2.43; source=("https://ftp.gnu.org/gnu/glibc/glibc-${pkgver}.tar.xz")
+build(){ cd glibc-${pkgver}; mkdir build32 build64; cd build32; echo "rootsbindir=/usr/sbin" > configparms; CC="gcc -m32" CXX="g++ -m32" ../configure --prefix=/usr --host=i686-pc-linux-gnu --build=$(../scripts/config.guess) --enable-kernel=4.19 --with-headers=/usr/include libc_cv_slibdir=/usr/lib32 libdir=/usr/lib32; make -j$(nproc); cd ../build64; echo "rootsbindir=/usr/sbin" > configparms; ../configure --prefix=/usr --enable-kernel=4.19 --with-headers=/usr/include libc_cv_slibdir=/usr/lib; make -j$(nproc); }
+package(){ cd glibc-${pkgver}/build32; make DESTDIR=$srcdir/m32 install; cd ../build64; make DESTDIR=$pkgdir install; cp -a $srcdir/m32/usr/lib32 $pkgdir/usr/; }
