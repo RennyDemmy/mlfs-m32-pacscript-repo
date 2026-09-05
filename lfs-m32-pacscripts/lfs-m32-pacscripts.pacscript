@@ -4,7 +4,7 @@ OUTDIR="lfs-m32-pacscripts"
 mkdir -p "$OUTDIR"
 cd "$OUTDIR" || exit 1
 
-echo "Generating 111 MLFS packages + Meta package to install into /mnt/lfs..."
+echo "Generating 113 MLFS packages (including Kernel and Meta package) targeting /mnt/lfs..."
 echo "WARNING: Ensure you export LFS_TGT=\"x86_64-lfs-linux-gnu\" in your terminal before building!"
 
 # Awk parses the EOF block, creates the directory, and writes the pacscript cleanly.
@@ -797,10 +797,17 @@ source=("https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v${pkgver
 build(){ cd e2fsprogs-${pkgver}; mkdir build32 build64; cd build32; CC="gcc -m32" ../configure --prefix=/usr --libdir=/usr/lib32 --enable-elf-shlibs --disable-libblkid --disable-libuuid --disable-fsck; make; cd ../build64; ../configure --prefix=/usr --enable-elf-shlibs --disable-libblkid --disable-libuuid --disable-fsck; make; }
 package(){ cd e2fsprogs-${pkgver}/build32; make DESTDIR=$srcdir/m32 install; cd ../build64; make DESTDIR=$pkgdir/mnt/lfs install; cp -a $srcdir/m32/usr/lib32 $pkgdir/mnt/lfs/usr/; }
 
+#PKG: linux-kernel
+pkgname=linux-kernel
+pkgver=6.18.10
+source=("https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${pkgver}.tar.xz")
+build(){ cd linux-${pkgver}; make mrproper; make defconfig; make -j$(nproc); }
+package(){ cd linux-${pkgver}; make INSTALL_MOD_PATH=$pkgdir/mnt/lfs modules_install; install -D -m644 arch/x86/boot/bzImage $pkgdir/mnt/lfs/boot/vmlinuz-${pkgver}-lfs; install -D -m644 System.map $pkgdir/mnt/lfs/boot/System.map-${pkgver}; install -D -m644 .config $pkgdir/mnt/lfs/boot/config-${pkgver}; install -d -m755 $pkgdir/mnt/lfs/usr/share/doc/linux-${pkgver}; cp -r Documentation/* $pkgdir/mnt/lfs/usr/share/doc/linux-${pkgver}/; }
+
 #PKG: mlfs-m32-meta
 pkgname=mlfs-m32-meta
 pkgver=13.0
-description="Installs all MLFS 13.0-m32 packages to /mnt/lfs sequentially."
+description="Installs all MLFS 13.0-m32 packages to /mnt/lfs sequentially, including kernel and grub-efi."
 depends=(
     'binutils-pass1' 'gcc-pass1' 'linux-api-headers' 'glibc-pass1' 'libstdc++-pass1'
     'm4-temp' 'ncurses-temp' 'bash-temp' 'coreutils-temp' 'diffutils-temp'
@@ -818,9 +825,10 @@ depends=(
     'diffutils' 'gawk' 'findutils' 'groff' 'grub' 'grub-efi' 'gzip' 'iproute2'
     'kbd' 'libpipeline' 'make' 'patch' 'tar' 'texinfo' 'vim' 'markupsafe'
     'jinja2' 'systemd' 'dbus' 'man-db' 'procps-ng' 'util-linux' 'e2fsprogs'
+    'linux-kernel'
 )
 build() { :; }
 package() { :; }
 EOF_DATA
 
-echo "Done! 112 packages successfully formatted into perfect directory structures inside 'lfs-m32-pacscripts'."
+echo "Done! 113 packages successfully formatted into perfect directory structures inside 'lfs-m32-pacscripts'."
