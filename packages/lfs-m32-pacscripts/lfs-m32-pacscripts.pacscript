@@ -1,8 +1,8 @@
 #!/bin/bash
 
 OUTDIR="lfs-m32-pacscripts"
-mkdir -p "$OUTDIR"
-cd "$OUTDIR" || exit 1
+mkdir -p "$srcdir/$OUTDIR"
+cd "$srcdir/$OUTDIR" || exit 1
 
 echo "Generating 113 MLFS packages (including Kernel and Meta package) targeting /mnt/lfs..."
 echo "WARNING: Ensure you export LFS_TGT=\"x86_64-lfs-linux-gnu\" in your terminal before building!"
